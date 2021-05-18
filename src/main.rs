@@ -8,10 +8,14 @@ use std::str;
 extern crate clap;
 
 use clap::{App, Arg};
-use rand::Rng;
 
-fn split_fasta(input: &str, seg_length_min: usize, seg_length_max: usize, step: usize) {
-    let mut rng = rand::thread_rng();
+use rand_distr::{Beta, Distribution, BetaError};
+use rand::thread_rng;
+
+fn split_fasta(input: &str, seg_length_min: usize, seg_length_max: usize, step: f32) -> Result<(), BetaError>{
+    let seg_length_range = seg_length_max - seg_length_min;
+    let mut rng = thread_rng();
+    let beta = Beta::new(1.5, 15.0).unwrap();
     let mut reader = Reader::from_path(input).unwrap();
     while let Some(result) = reader.next() {
         let record = result.unwrap();
@@ -19,7 +23,7 @@ fn split_fasta(input: &str, seg_length_min: usize, seg_length_max: usize, step: 
         let name = record.id().unwrap();
         let mut start: usize = 0;
         let total_length: usize = seq.len();
-        let seg_length = rng.gen_range(seg_length_min..seg_length_max + 1);
+        let mut seg_length = seg_length_min + (beta.sample(&mut rng) * seg_length_range as f64) as usize;
         if total_length < seg_length {
             println!(">{}:{}-{}", name, 0, total_length);
             println!("{}", str::from_utf8(&seq[0..total_length]).unwrap());
@@ -27,7 +31,9 @@ fn split_fasta(input: &str, seg_length_min: usize, seg_length_max: usize, step: 
             while start + seg_length <= total_length {
                 println!(">{}:{}-{}", name, start, start + seg_length);
                 println!("{}", str::from_utf8(&seq[start..(start + seg_length)]).unwrap());
-                start += step;
+                start += (step * seg_length as f32) as usize;
+
+                seg_length = seg_length_min + (beta.sample(&mut rng) * seg_length_range as f64) as usize;
             }
             if start < total_length {
                 start = total_length - seg_length;
@@ -36,6 +42,8 @@ fn split_fasta(input: &str, seg_length_min: usize, seg_length_max: usize, step: 
             }
         }
     }
+
+    Ok(())
 }
 
 fn main() -> io::Result<()> {
@@ -55,7 +63,7 @@ fn main() -> io::Result<()> {
                 .short("l")
                 .long("seg-length")
                 .takes_value(true)
-                .help("Random length of the splits min-max"),
+                .help("Random length of the splits, following a Poisson distribution: mean:min-max"),
         )
         .arg(
             Arg::with_name("step")
@@ -83,7 +91,7 @@ fn main() -> io::Result<()> {
         .parse::<usize>()
         .unwrap();
 
-    let step = matches.value_of("step").unwrap().parse::<usize>().unwrap();
+    let step = matches.value_of("step").unwrap().parse::<f32>().unwrap();
 
     split_fasta(filename, seg_length_min, seg_length_max, step);
 
