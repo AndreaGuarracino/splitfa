@@ -16,14 +16,14 @@ use std::borrow::Borrow;
 
 pub fn complement(a: u8) -> u8 {
     match a {
-        b'a' => b't' ,
-        b'c' => b'g' ,
-        b't' => b'a' ,
-        b'g' => b'c' ,
+        b'a' => b't',
+        b'c' => b'g',
+        b't' => b'a',
+        b'g' => b'c',
         b'u' => b'a',
-        b'A' => b'T' ,
-        b'C' => b'G' ,
-        b'T' => b'A' ,
+        b'A' => b'T',
+        b'C' => b'G',
+        b'T' => b'A',
         b'G' => b'C',
         b'U' => b'A',
         _ => b'N'
@@ -45,7 +45,7 @@ pub fn complement(a: u8) -> u8 {
 pub fn revcomp<C, T>(text: T) -> Vec<u8>
     where
         C: Borrow<u8>,
-        T: IntoIterator<Item = C>,
+        T: IntoIterator<Item=C>,
         T::IntoIter: DoubleEndedIterator,
 {
     text.into_iter()
@@ -54,7 +54,7 @@ pub fn revcomp<C, T>(text: T) -> Vec<u8>
         .collect()
 }
 
-fn split_fasta(input: &str, seg_length_min: usize, seg_length_max: usize, step: f32) -> Result<(), BetaError>{
+fn split_fasta(input: &str, seg_length_min: usize, seg_length_max: usize, step: f32) -> Result<(), BetaError> {
     let seg_length_range = seg_length_max - seg_length_min;
     let mut rng = thread_rng();
     let beta = Beta::new(1.5, 15.0).unwrap();
@@ -66,25 +66,44 @@ fn split_fasta(input: &str, seg_length_min: usize, seg_length_max: usize, step: 
         let name = record.id().unwrap();
         let mut start: usize = 0;
         let total_length: usize = seq.len();
+
         let mut seg_length = seg_length_min + (beta.sample(&mut rng) * seg_length_range as f64) as usize;
         if total_length < seg_length {
-            println!(">{}:{}-{}!{}", name, 0, total_length, if num_seq % 2 == 0 {"+"} else {"-"} );
-
-            if num_seq % 2 == 0 {
-                println!("{}", str::from_utf8(&seq[0..total_length]).unwrap());
+            if true {
+                println!("{}!{}-{}!{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\tNM:i:0\tcg:Z:{}=",
+                         name, 0, total_length, if num_seq % 2 == 0 { "+" } else { "-" },
+                         total_length, 0, total_length, if num_seq % 2 == 0 { "+" } else { "-" },
+                         name, total_length, 0, total_length,
+                         total_length, total_length, 60, total_length
+                );
             } else {
-                println!("{}", str::from_utf8(&*revcomp(&seq[0..total_length])).unwrap());
+                println!(">{}!{}-{}!{}", name, 0, total_length, if num_seq % 2 == 0 { "+" } else { "-" });
+                if num_seq % 2 == 0 {
+                    println!("{}", str::from_utf8(&seq[0..total_length]).unwrap());
+                } else {
+                    println!("{}", str::from_utf8(&*revcomp(&seq[0..total_length])).unwrap());
+                }
             }
+
             num_seq = num_seq + 1;
         } else {
             while start + seg_length <= total_length {
-                println!(">{}:{}-{}!{}", name, start, start + seg_length, if num_seq % 2 == 0 {"+"} else {"-"});
-
-                if num_seq % 2 == 0 {
-                    println!("{}", str::from_utf8(&seq[start..(start + seg_length)]).unwrap());
+                if true {
+                    println!("{}!{}-{}!{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\tNM:i:0\tcg:Z:{}=",
+                             name, start, start + seg_length, if num_seq % 2 == 0 { "+" } else { "-" },
+                             seg_length, 0, seg_length, if num_seq % 2 == 0 { "+" } else { "-" },
+                             name, total_length, start, start + seg_length,
+                             seg_length, seg_length, 60, seg_length
+                    );
                 } else {
-                    println!("{}", str::from_utf8(&*revcomp(&seq[start..(start + seg_length)])).unwrap());
+                    println!(">{}!{}-{}!{}", name, start, start + seg_length, if num_seq % 2 == 0 { "+" } else { "-" });
+                    if num_seq % 2 == 0 {
+                        println!("{}", str::from_utf8(&seq[start..(start + seg_length)]).unwrap());
+                    } else {
+                        println!("{}", str::from_utf8(&*revcomp(&seq[start..(start + seg_length)])).unwrap());
+                    }
                 }
+
                 num_seq = num_seq + 1;
 
                 start += (step * seg_length as f32) as usize;
@@ -93,13 +112,23 @@ fn split_fasta(input: &str, seg_length_min: usize, seg_length_max: usize, step: 
             }
             if start < total_length {
                 start = total_length - seg_length;
-                println!(">{}:{}-{}!{}", name, start, start + seg_length, if num_seq % 2 == 0 {"+"} else {"-"});
 
-                if num_seq % 2 == 0 {
-                    println!("{}", str::from_utf8(&seq[start..(start + seg_length)]).unwrap());
+                if true {
+                    println!("{}!{}-{}!{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\tNM:i:0\tcg:Z:{}=",
+                             name, start, start + seg_length, if num_seq % 2 == 0 { "+" } else { "-" },
+                             seg_length, 0, seg_length, if num_seq % 2 == 0 { "+" } else { "-" },
+                             name, total_length, start, start + seg_length,
+                             seg_length, seg_length, 60, seg_length
+                    );
                 } else {
-                    println!("{}", str::from_utf8(&*revcomp(&seq[start..(start + seg_length)])).unwrap());
+                    println!(">{}!{}-{}!{}", name, start, start + seg_length, if num_seq % 2 == 0 { "+" } else { "-" });
+                    if num_seq % 2 == 0 {
+                        println!("{}", str::from_utf8(&seq[start..(start + seg_length)]).unwrap());
+                    } else {
+                        println!("{}", str::from_utf8(&*revcomp(&seq[start..(start + seg_length)])).unwrap());
+                    }
                 }
+
                 num_seq = num_seq + 1;
             }
         }
