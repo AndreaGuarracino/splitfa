@@ -69,6 +69,7 @@ fn split_fasta(input: &str, seg_length_min: usize, seg_length_max: usize, step: 
         let mut seg_length = seg_length_min + (beta.sample(&mut rng) * seg_length_range as f64) as usize;
         if total_length < seg_length {
             println!(">{}:{}-{}!{}", name, 0, total_length, if num_seq % 2 == 0 {"+"} else {"-"} );
+
             if num_seq % 2 == 0 {
                 println!("{}", str::from_utf8(&seq[0..total_length]).unwrap());
             } else {
@@ -93,7 +94,6 @@ fn split_fasta(input: &str, seg_length_min: usize, seg_length_max: usize, step: 
             if start < total_length {
                 start = total_length - seg_length;
                 println!(">{}:{}-{}!{}", name, start, start + seg_length, if num_seq % 2 == 0 {"+"} else {"-"});
-                println!("{}", str::from_utf8(&seq[start..(start + seg_length)]).unwrap());
 
                 if num_seq % 2 == 0 {
                     println!("{}", str::from_utf8(&seq[start..(start + seg_length)]).unwrap());
@@ -125,7 +125,7 @@ fn main() -> io::Result<()> {
                 .short("l")
                 .long("seg-length")
                 .takes_value(true)
-                .help("Random length of the splits, following a Poisson distribution: mean:min-max"),
+                .help("Random length of the splits: min-max"),
         )
         .arg(
             Arg::with_name("step")
