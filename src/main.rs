@@ -12,7 +12,7 @@ use clap::{App, Arg};
 use rand_distr::{Beta, Distribution, BetaError};
 use rand::thread_rng;
 use std::borrow::Borrow;
-use std::fs::File;
+//use std::fs::File;
 
 
 pub fn complement(a: u8) -> u8 {
@@ -55,7 +55,7 @@ pub fn revcomp<C, T>(text: T) -> Vec<u8>
         .collect()
 }
 
-fn split_fasta(input: &str, seg_length_min: usize, seg_length_max: usize, step: f32, mut paf: File) -> Result<(), BetaError> {
+fn split_fasta(input: &str, seg_length_min: usize, seg_length_max: usize, step: f32/*, mut paf: File*/) -> Result<(), BetaError> {
     let seg_length_range = seg_length_max - seg_length_min;
     let mut rng = thread_rng();
     let beta = Beta::new(1.5, 15.0).unwrap();
@@ -77,12 +77,12 @@ fn split_fasta(input: &str, seg_length_min: usize, seg_length_max: usize, step: 
                 println!("{}", str::from_utf8(&*revcomp(&seq[0..total_length])).unwrap());
             }
 
-            paf.write(format!("{}!{}-{}!{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\tNM:i:0\tcg:Z:{}=\n",
-                              name, 0, total_length, if num_seq % 2 == 0 { "+" } else { "-" },
-                              total_length, 0, total_length, if num_seq % 2 == 0 { "+" } else { "-" },
-                              name, total_length, 0, total_length,
-                              total_length, total_length, 60, total_length
-            ).as_ref());
+            // paf.write(format!("{}!{}-{}!{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\tNM:i:0\tcg:Z:{}=\n",
+            //                   name, 0, total_length, if num_seq % 2 == 0 { "+" } else { "-" },
+            //                   total_length, 0, total_length, if num_seq % 2 == 0 { "+" } else { "-" },
+            //                   name, total_length, 0, total_length,
+            //                   total_length, total_length, 60, total_length
+            // ).as_ref());
 
             num_seq = num_seq + 1;
         } else {
@@ -94,12 +94,12 @@ fn split_fasta(input: &str, seg_length_min: usize, seg_length_max: usize, step: 
                     println!("{}", str::from_utf8(&*revcomp(&seq[start..(start + seg_length)])).unwrap());
                 }
 
-                paf.write(format!("{}!{}-{}!{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\tNM:i:0\tcg:Z:{}=\n",
-                            name, start, start + seg_length, if num_seq % 2 == 0 { "+" } else { "-" },
-                            seg_length, 0, seg_length, if num_seq % 2 == 0 { "+" } else { "-" },
-                            name, total_length, start, start + seg_length,
-                            seg_length, seg_length, 60, seg_length
-                ).as_ref());
+                // paf.write(format!("{}!{}-{}!{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\tNM:i:0\tcg:Z:{}=\n",
+                //             name, start, start + seg_length, if num_seq % 2 == 0 { "+" } else { "-" },
+                //             seg_length, 0, seg_length, if num_seq % 2 == 0 { "+" } else { "-" },
+                //             name, total_length, start, start + seg_length,
+                //             seg_length, seg_length, 60, seg_length
+                // ).as_ref());
 
                 num_seq = num_seq + 1;
 
@@ -117,12 +117,12 @@ fn split_fasta(input: &str, seg_length_min: usize, seg_length_max: usize, step: 
                     println!("{}", str::from_utf8(&*revcomp(&seq[start..(start + seg_length)])).unwrap());
                 }
 
-                paf.write(format!("{}!{}-{}!{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\tNM:i:0\tcg:Z:{}=\n",
-                            name, start, start + seg_length, if num_seq % 2 == 0 { "+" } else { "-" },
-                            seg_length, 0, seg_length, if num_seq % 2 == 0 { "+" } else { "-" },
-                            name, total_length, start, start + seg_length,
-                            seg_length, seg_length, 60, seg_length
-                ).as_ref());
+                // paf.write(format!("{}!{}-{}!{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\tNM:i:0\tcg:Z:{}=\n",
+                //             name, start, start + seg_length, if num_seq % 2 == 0 { "+" } else { "-" },
+                //             seg_length, 0, seg_length, if num_seq % 2 == 0 { "+" } else { "-" },
+                //             name, total_length, start, start + seg_length,
+                //             seg_length, seg_length, 60, seg_length
+                // ).as_ref());
 
                 num_seq = num_seq + 1;
             }
@@ -157,14 +157,14 @@ fn main() -> io::Result<()> {
                 .long("step")
                 .takes_value(true)
                 .help("Step size between splits"),
-        ).arg(
-        Arg::with_name("paf-output")
-            .short("p")
-            .long("paf")
-            .required(true)
-            .takes_value(true)
-            .help("Emit splits' alignments in PAF format"),
-    )
+        )
+        // .arg(
+        // Arg::with_name("paf-output")
+        //     .short("p")
+        //     .long("paf")
+        //     .required(true)
+        //     .takes_value(true)
+        //     .help("Emit splits' alignments in PAF format"))
         .get_matches();
 
     let filename = matches.value_of("INPUT").unwrap();
@@ -186,10 +186,10 @@ fn main() -> io::Result<()> {
 
     let step = matches.value_of("step").unwrap().parse::<f32>().unwrap();
 
-    let paf_output = matches.value_of("paf-output").unwrap();
-    let paf = File::create(paf_output)?;
+    // let paf_output = matches.value_of("paf-output").unwrap();
+    // let paf = File::create(paf_output)?;
 
-    split_fasta(filename, seg_length_min, seg_length_max, step, paf);
+    split_fasta(filename, seg_length_min, seg_length_max, step);
 
     Ok(())
 }
