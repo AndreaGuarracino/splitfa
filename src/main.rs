@@ -86,7 +86,7 @@ fn split_fasta(input: &str, seg_length_min: usize, seg_length_max: usize, step: 
 
             num_seq = num_seq + 1;
         } else {
-            while start + seg_length <= total_length {
+            while start + seg_length <= total_length - seg_length {
                 println!(">{}!{}-{}!{}", name, start, start + seg_length, if num_seq % 2 == 0 { "+" } else { "-" });
                 if num_seq % 2 == 0 {
                     println!("{}", str::from_utf8(&seq[start..(start + seg_length)]).unwrap());
@@ -108,13 +108,13 @@ fn split_fasta(input: &str, seg_length_min: usize, seg_length_max: usize, step: 
                 seg_length = seg_length_min + (beta.sample(&mut rng) * seg_length_range as f64) as usize;
             }
             if start < total_length {
-                start = total_length - seg_length;
+                //start = total_length - seg_length;
 
-                println!(">{}!{}-{}!{}", name, start, start + seg_length, if num_seq % 2 == 0 { "+" } else { "-" });
+                println!(">{}!{}-{}!{}", name, start, total_length, if num_seq % 2 == 0 { "+" } else { "-" });
                 if num_seq % 2 == 0 {
-                    println!("{}", str::from_utf8(&seq[start..(start + seg_length)]).unwrap());
+                    println!("{}", str::from_utf8(&seq[start..(total_length)]).unwrap());
                 } else {
-                    println!("{}", str::from_utf8(&*revcomp(&seq[start..(start + seg_length)])).unwrap());
+                    println!("{}", str::from_utf8(&*revcomp(&seq[start..(total_length)])).unwrap());
                 }
 
                 // paf.write(format!("{}!{}-{}!{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\tNM:i:0\tcg:Z:{}=\n",
