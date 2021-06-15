@@ -119,7 +119,7 @@ fn split_fasta(input: &str, seg_length_min: usize, seg_length_max: usize, step: 
 
                 eprint!("{}!{}-{}!{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\tNM:i:0\tcg:Z:{}=\n",
                             name, start, total_length, if num_seq % 2 == 0 { "+" } else { "-" },
-                            seg_length, 0, seg_length, if num_seq % 2 == 0 { "+" } else { "-" },
+                            seg_length, 0, total_length - start, if num_seq % 2 == 0 { "+" } else { "-" },
                             name, total_length, start, total_length,
                             seg_length, seg_length, 60, total_length - start
                 );
