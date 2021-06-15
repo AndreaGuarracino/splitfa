@@ -77,7 +77,7 @@ fn split_fasta(input: &str, seg_length_min: usize, seg_length_max: usize, step: 
                 println!("{}", str::from_utf8(&*revcomp(&seq[0..total_length])).unwrap());
             }
 
-            eprintln!("{}!{}-{}!{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\tNM:i:0\tcg:Z:{}=\n",
+            eprint!("{}!{}-{}!{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\tNM:i:0\tcg:Z:{}=\n",
                               name, 0, total_length, if num_seq % 2 == 0 { "+" } else { "-" },
                               total_length, 0, total_length, if num_seq % 2 == 0 { "+" } else { "-" },
                               name, total_length, 0, total_length,
@@ -94,7 +94,7 @@ fn split_fasta(input: &str, seg_length_min: usize, seg_length_max: usize, step: 
                     println!("{}", str::from_utf8(&*revcomp(&seq[start..(start + seg_length)])).unwrap());
                 }
 
-                eprintln!("{}!{}-{}!{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\tNM:i:0\tcg:Z:{}=\n",
+                eprint!("{}!{}-{}!{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\tNM:i:0\tcg:Z:{}=\n",
                             name, start, start + seg_length, if num_seq % 2 == 0 { "+" } else { "-" },
                             seg_length, 0, seg_length, if num_seq % 2 == 0 { "+" } else { "-" },
                             name, total_length, start, start + seg_length,
@@ -117,7 +117,7 @@ fn split_fasta(input: &str, seg_length_min: usize, seg_length_max: usize, step: 
                     println!("{}", str::from_utf8(&*revcomp(&seq[start..(total_length)])).unwrap());
                 }
 
-                eprintln!("{}!{}-{}!{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\tNM:i:0\tcg:Z:{}=\n",
+                eprint!("{}!{}-{}!{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\tNM:i:0\tcg:Z:{}=\n",
                             name, start, total_length, if num_seq % 2 == 0 { "+" } else { "-" },
                             seg_length, 0, seg_length, if num_seq % 2 == 0 { "+" } else { "-" },
                             name, total_length, start, total_length,
